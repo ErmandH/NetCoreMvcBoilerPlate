@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GDSC.DataAccessLayer.Context;
+using BoilerPlate.DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
 namespace GDSC.DataAccessLayer
 {
-    public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<GdscDbContext>
+    public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
     {
-        public GdscDbContext CreateDbContext(string[] args)
+        public AppDbContext CreateDbContext(string[] args)
         {
-            DbContextOptionsBuilder<GdscDbContext> dbContextOptionsBuilder = new();
+            DbContextOptionsBuilder<AppDbContext> dbContextOptionsBuilder = new();
             dbContextOptionsBuilder.UseSqlServer(CustomConfigurationProvider.GetRemoteConnectionString());
             return new(dbContextOptionsBuilder.Options);
         }

@@ -1,0 +1,61 @@
+﻿@model IEnumerable<AppRole>
+
+@inject PathHelper pathHelper
+@section Scripts {
+    <script src="@pathHelper.GetPath("/admin/scripts/user/add.js")"></script>
+}
+
+<form id="form-submit">
+    <div class="row pt-2">
+        <div class="col-12">
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h2>Kullanıcı Ekle</h2>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Ad</label>
+                        <input name="FirstName" type="text" class="form-control" maxlength="64" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Soyad</label>
+                        <input name="LastName" type="text" class="form-control" maxlength="64" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Rol</label>
+                        <select name="RoleId" class="form-control">
+                            @foreach (var role in Model.OrderBy(x => x.Name))
+                            {
+                                <option value="@role.Id">@role.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input name="Email" type="email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Telefon Numarası</label>
+                        <input name="PhoneNumber" type="text" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Şifre</label>
+                        <input name="Password" type="password" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Aktif Mi?</label>
+                        <select name="IsActive" class="form-control">
+                            <option value="true">Aktif</option>
+                            <option value="false">Pasif</option>
+                        </select>
+                    </div>
+                    
+                </div>
+                <div class="card-footer text-left">
+                    <button class="btn btn-lg btn-primary" type="submit">Ekle</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

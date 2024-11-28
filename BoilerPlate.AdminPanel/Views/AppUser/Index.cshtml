@@ -1,0 +1,73 @@
+﻿@using BoilerPlate.Entity.ViewModels.AppUserVM
+@model IEnumerable<ListAppUserViewModel>
+@inject PathHelper pathHelper
+@section Styles {
+    <link rel="stylesheet" href="@pathHelper.GetPath("/admin/assets/bundles/datatables/datatables.min.css")">
+    <link rel="stylesheet" href="@pathHelper.GetPath("/admin/assets/bundles/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css")">
+}
+
+@section Scripts {
+    <script src="@pathHelper.GetPath("/admin/assets/bundles/datatables/datatables.min.js")"></script>
+    <script src="@pathHelper.GetPath("/admin/assets/bundles/datatables/DataTables-1.10.16/js/dataTables.bootstrap4.min.js")"></script>
+    <script src="@pathHelper.GetPath("/admin/assets/bundles/jquery-ui/jquery-ui.min.js")"></script>
+    <script src="@pathHelper.GetPath("/admin/scripts/user/list.js")"></script>
+    <script src="@pathHelper.GetPath("/admin/scripts/user/delete.js")"></script>
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card card-primary pt-2">
+            <div class="card-header">
+                <h3 class="card-title">Kullanıcı Listesi</h3>
+            </div>
+            
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped" id="data-table">
+                        <thead>
+                            <tr class="text-center">
+                                <th class="text-center">#</th>
+                                <th>Ad Soyad</th>
+                                <th>Rol</th>
+                                <th>Email</th>
+                                <th>Telefon</th>
+                                <th>Oluşturulma Tarihi</th>
+                                <th>Aktiflik</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var u in Model)
+                            {
+                                <tr>
+                                    <td class="text-center font-weight-bold">@u.AppUser.Id</td>
+                                    <td>@u.AppUser.FirstName @u.AppUser.LastName</td>
+                                    <td>@u.UserRole</td>
+                                    <td>@u.AppUser.Email</td>
+                                    <td>@u.AppUser.PhoneNumber</td>
+                                    <td>@u.AppUser.CreatedDate</td>
+                                    <td>
+                                        @if (@u.AppUser.IsActive)
+                                        {
+                                            <span>Aktif</span>
+                                        }
+                                        else 
+                                        {
+                                            <span>Pasif</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-3">
+                                            <a href="~/users/update/@u.AppUser.Id" class="btn btn-info">Güncelle</a>
+                                            <button data-id="@u.AppUser.Id" class="btn btn-danger btnDelete ml-1">Sil</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }                
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,79 @@
+﻿@using BoilerPlate.Entity.ViewModels.AppUserVM
+@model UpdateAppUserViewModel
+
+@inject PathHelper pathHelper
+@section Scripts {
+    <script src="@pathHelper.GetPath("/admin/scripts/user/update.js")"></script>
+}
+
+<form id="form-submit">
+    <div class="row pt-2">
+        <div class="col-12">
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h2>Kullanıcı Güncelle</h2>
+                </div>
+                <div class="card-body">
+                    <input hidden name="Id" value="@Model.UserViewModel.AppUser.Id" />
+                    <div class="form-group">
+                        <label>Ad</label>
+                        <input name="FirstName" type="text" class="form-control" maxlength="64" value="@Model.UserViewModel.AppUser.FirstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Soyad</label>
+                        <input name="LastName" type="text" class="form-control" maxlength="64" value="@Model.UserViewModel.AppUser.LastName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Rol</label>
+                        <select name="RoleId" class="form-control">
+                            @foreach (var role in Model.Roles.OrderBy(s => s.Name))
+                            {
+                                if (role.Name == Model.UserViewModel.UserRole)
+                                {
+                                    <option value="@role.Id" selected>@role.Name</option>
+                                }
+                                else
+                                {
+                                    <option value="@role.Id">@role.Name</option>
+                                }
+                                    
+                            }
+                        </select>
+                    </div>
+
+                    
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input name="Email" type="email" class="form-control" value="@Model.UserViewModel.AppUser.Email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Telefon Numarası</label>
+                        <input name="PhoneNumber" type="text" class="form-control" value="@Model.UserViewModel.AppUser.PhoneNumber" required>
+                    </div>
+                    
+                     <!-- Aktiflik Durumu -->
+                    <div class="form-group">
+                        <label>Aktiflik Durumu</label>
+
+                        <select name="IsActive" class="form-control">
+                            @if (Model.UserViewModel.AppUser.IsActive == true)
+                            {
+                                <option value="true" selected>Aktif</option>
+                                <option value="false">Pasif</option>
+                            }
+                            else
+                            {
+                                <option value="true">Aktif</option>
+                                <option value="false" selected>Pasif</option>
+                            }
+                        </select>
+                    </div>
+                    
+                </div>
+                <div class="card-footer text-left">
+                    <button class="btn btn-lg btn-primary" type="submit">Güncelle</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

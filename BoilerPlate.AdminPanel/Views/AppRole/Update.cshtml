@@ -1,0 +1,27 @@
+﻿@model AppRole
+@inject PathHelper pathHelper
+@section Scripts {
+    <script src="@pathHelper.GetPath("/admin/scripts/role/update.js")"></script>
+}
+
+<form id="form-submit">
+    <div class="row pt-2">
+        <div class="col-12">
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h2>Rol Güncelle</h2>
+                </div>
+                <div class="card-body">
+                    <input hidden name="Id" value="@Model.Id" />
+                    <div class="form-group">
+                        <label>Rol Adı</label>
+                        <input name="RoleName" value="@Model.Name" type="text" class="form-control">
+                    </div>
+                </div>
+                <div class="card-footer text-left">
+                    <button class="btn btn-lg btn-primary" type="submit">Güncelle</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

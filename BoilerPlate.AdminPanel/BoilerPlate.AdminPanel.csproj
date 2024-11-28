@@ -5,5 +5,17 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.10" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.6" />
+	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BoilerPlate.Business\BoilerPlate.Business.csproj" />
+    <ProjectReference Include="..\BoilerPlate.DAL\BoilerPlate.DAL.csproj" />
+  </ItemGroup>
 
 </Project>

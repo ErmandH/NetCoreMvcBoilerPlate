@@ -1,49 +1,169 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims;
+@using BoilerPlate.Business.DbServices;
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<BoilerPlate.Entity.Entities.Concrete.Identity.AppUser> userManager
+@inject AppUserService userService
+
+@{
+    string name = string.Empty;
+    string surname = string.Empty;
+    string role = string.Empty;
+    if (User.Identity.IsAuthenticated)
+    {
+        var user = await userManager.GetUserAsync(User);
+        name = user.FirstName;
+        surname = user.LastName;
+        var result = await userService.GetUserRoleAsync(user.Id);
+        role = result.Data;
+    }
+}
+
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - BoilerPlate.AdminPanel</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/BoilerPlate.AdminPanel.styles.css" asp-append-version="true" />
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
+    <title>Admin Paneli</title>
+    <!-- General CSS Files -->
+    <link rel="stylesheet" href="~/admin/assets/css/app.min.css">
+    <!-- Template CSS -->
+    <link rel="stylesheet" href="~/admin/assets/css/style.css">
+    <link rel="stylesheet" href="~/admin/assets/css/components.css">
+    <link rel="stylesheet" href="~/admin/assets/bundles/jqvmap/dist/jqvmap.min.css">
+    <!-- Custom style CSS -->
+    <link rel="stylesheet" href="~/admin/assets/css/custom.css">
+    <link rel="stylesheet" href="~/admin/assets/css/customstyles.css">
+    <link rel='shortcut icon' type='image/x-icon' href='~/admin/assets/img/favicon.ico' />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            prefix: "t-",
+            important: true,
+            corePlugins: {
+                preflight: false,
+            }
+        }
+    </script>
+    @await RenderSectionAsync("Styles", required: false)
+
 </head>
+
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">BoilerPlate.AdminPanel</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <div class="loader"></div>
+    <div id="app">
+        <div class="main-wrapper main-wrapper-1">
+            <div class="navbar-bg"></div>
+            <nav class="navbar navbar-expand-lg main-navbar sticky">
+                <div class="form-inline mr-auto">
+                    <ul class="navbar-nav mr-3">
+                        <li>
+                            <a href="#" data-toggle="sidebar" class="nav-link nav-link-lg collapse-btn"> <i
+                                    data-feather="menu"></i></a>
                         </li>
                     </ul>
                 </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+                <ul class="navbar-nav navbar-right align-items-center">
+                    <li>
+                        <a href="~/logout" id="btn-logout" class="nav-link nav-link-lg text-danger">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link nav-link-lg fullscreen-btn">
+                            <i data-feather="maximize"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="main-sidebar sidebar-style-2">
+                <aside id="sidebar-wrapper">
+                    <div class="sidebar-user">
+                        <div class="sidebar-user-picture">
+                            <img alt="image" src="~/admin/assets/img/user.png">
+                        </div>
+                        <div class="sidebar-user-details">
+                            <div class="user-name">@name @surname</div>
+                            <div class="user-role">@role</div>
+                        </div>
+                    </div>
+                    <ul class="sidebar-menu">
+                        <li class="menu-header">MAIN</li>
+                        <li>
+                            <a class="nav-link" href="~/">
+                                <i class="fas fa-home"></i><span>
+                                    Ana Sayfa
+                                </span>
+                            </a>
+                        </li>
+                        @if (role.Equals("Admin"))
+                        {
+                            <li class="dropdown">
+                                <a href="#" class="menu-toggle nav-link has-dropdown">
+                                    <i class="fas fa-user"></i><span>Kullanıcı Ayarları</span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="nav-link" href="/appuser/add">Kullanıcı Ekle</a></li>
+                                    <li><a class="nav-link" href="/appuser"">Kullanıcı Listesi</a></li>
+                                </ul>
+                            </li>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2024 - BoilerPlate.AdminPanel - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <li class="dropdown">
+                                <a href="#" class="menu-toggle nav-link has-dropdown">
+                                    <i class="fas fa-lock"></i><span>Rol Ayarları</span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="nav-link" href="/approle/add">Rol Ekle</a></li>
+                                    <li><a class="nav-link" href="/approle">Rol Listesi</a></li>
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+                </aside>
+            </div>
+            <!-- Main Content -->
+            <div class="main-content">
+                <section class="section">
+                    @RenderBody()
+                </section>
+            </div>
+
         </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    </div>
+    <script>
+        var environment = '@Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")';
+        function getPath(path) {
+            if (environment === 'production') {
+                return `/core${path}`
+            }
+            return path
+        }
+    </script>
+    <!-- General JS Scripts -->
+    <script src="~/admin/assets/js/app.min.js"></script>
+    <!-- JS Libraries -->
+    <script src="~/admin/assets/bundles/apexcharts/apexcharts.min.js"></script>
+    <script src="~/admin/assets/bundles/amcharts4/core.js"></script>
+    <script src="~/admin/assets/bundles/amcharts4/charts.js"></script>
+    <script src="~/admin/assets/bundles/amcharts4/animated.js"></script>
+    <!-- Page Specific JS File -->
+    <script src="~/admin/assets/js/page/index.js"></script>
+    <!-- Template JS File -->
+    <script src="~/admin/assets/js/scripts.js"></script>
+    <!-- Custom JS File -->
+    <script src="~/admin/assets/js/custom.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"
+        integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="~/ckeditor/ckeditor.js"></script>
+    <script src="~/admin/scripts/common/forms/utils.js"></script>
+    <script src="~/admin/scripts/common/forms/form.js"></script>
+    <script src="~/admin/scripts/common/delete.js"></script>
+    <script src="~/admin/scripts/common/validate.js"></script>
+
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+
 </html>

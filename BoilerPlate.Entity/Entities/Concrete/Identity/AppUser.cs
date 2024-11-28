@@ -13,7 +13,6 @@ namespace BoilerPlate.Entity.Entities.Concrete.Identity
 
         public string? LastName { get; set; }
 
-        public string Detail { get; set; }
 
         public bool IsActive { get; set; }
 

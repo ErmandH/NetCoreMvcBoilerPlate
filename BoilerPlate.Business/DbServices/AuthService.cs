@@ -1,4 +1,7 @@
 ﻿using BoilerPlate.Entity.Entities.Concrete.Identity;
+using BoilerPlate.Entity.Results.Abstract;
+using BoilerPlate.Entity.Results.ComplexTypes;
+using BoilerPlate.Entity.Results.Concrete;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -19,21 +22,43 @@ namespace BoilerPlate.Business.DbServices
             this.signInManager = signInManager;
         }
 
-        public async Task<IList<string>?> LoginAsync(string Email, string Password)
+        public async Task<IDataResult<IList<string>>> LoginAsync(string email, string password)
         {
-            var user = await userManager.FindByEmailAsync(Email);
-            if (user == null)
-                throw new Exception("E-Posta veya şifre yanlış");
-            var result = await signInManager.PasswordSignInAsync(user, Password, true, false);
-            if (!result.Succeeded)
-                throw new Exception("E-Posta veya şifre yanlış");
-            var roles = await userManager.GetRolesAsync(user);
-            return roles;
+            try
+            {
+                var user = await userManager.FindByEmailAsync(email);
+                if (user == null)
+                {
+                    return new DataResult<IList<string>>(ResultStatus.Error, "E-Posta veya şifre yanlış.", null);
+                }
+
+                var result = await signInManager.PasswordSignInAsync(user, password, true, false);
+                if (!result.Succeeded)
+                {
+                    return new DataResult<IList<string>>(ResultStatus.Error, "E-Posta veya şifre yanlış.", null);
+                }
+
+                var roles = await userManager.GetRolesAsync(user);
+                return new DataResult<IList<string>>(ResultStatus.Success, roles);
+            }
+            catch (Exception ex)
+            {
+                return new DataResult<IList<string>>(ResultStatus.Error, ex.Message, null);
+            }
         }
 
-        public async Task LogoutAsync()
+
+        public async Task<IResult> LogoutAsync()
         {
-            await signInManager.SignOutAsync();
+            try
+            {
+                await signInManager.SignOutAsync();
+                return new Result(ResultStatus.Success);
+            }
+            catch (Exception ex)
+            {
+                return new Result(ResultStatus.Error, ex.Message, ex);
+            }  
         }
     }
 }

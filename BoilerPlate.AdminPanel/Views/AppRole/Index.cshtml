@@ -1,0 +1,54 @@
+﻿@inject PathHelper pathHelper
+@model IEnumerable<AppRole>
+
+@section Styles {
+    <link rel="stylesheet" href="@pathHelper.GetPath("/admin/assets/bundles/datatables/datatables.min.css")">
+    <link rel="stylesheet" href="@pathHelper.GetPath("/admin/assets/bundles/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css")">
+}
+
+@section Scripts {
+    <script src="@pathHelper.GetPath("/admin/assets/bundles/datatables/datatables.min.js")"></script>
+    <script src="@pathHelper.GetPath("/admin/assets/bundles/datatables/DataTables-1.10.16/js/dataTables.bootstrap4.min.js")"></script>
+    <script src="@pathHelper.GetPath("/admin/assets/bundles/jquery-ui/jquery-ui.min.js")"></script>
+    <script src="@pathHelper.GetPath("/admin/scripts/role/list.js")"></script>
+    <script src="@pathHelper.GetPath("/admin/scripts/role/delete.js")"></script>
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card card-primary pt-2">
+            <div class="card-header">
+                <h3 class="card-title">Rol Listesi</h3>
+            </div>
+
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped" id="data-table">
+                        <thead>
+                            <tr>
+                                <th class="text-center">#</th>
+                                <th>Rol Adı</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var role in Model)
+                            {
+                                <tr>
+                                    <td class="text-center font-weight-bold">@role.Id</td>
+                                    <td><span class="h6">@role.Name</span></td>
+                                    <td>
+                                        <div class="d-flex gap-3">
+                                            <a href="~/roles/update/@role.Id" class="btn btn-info">Güncelle</a>
+                                            <button data-id="@role.Id" class="btn btn-danger btnDelete ml-1">Sil</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
