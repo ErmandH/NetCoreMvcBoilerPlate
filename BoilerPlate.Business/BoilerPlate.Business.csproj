@@ -17,6 +17,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+    <ProjectReference Include="..\BoilerPlate.DAL\BoilerPlate.DAL.csproj" />
     <ProjectReference Include="..\BoilerPlate.Entity\BoilerPlate.Entity.csproj" />
   </ItemGroup>
 

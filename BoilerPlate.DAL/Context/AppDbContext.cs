@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BoilerPlate.Entity.Entities.Abstract;
+using BoilerPlate.Entity.Entities.Concrete;
 using BoilerPlate.Entity.Entities.Concrete.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,8 @@ namespace BoilerPlate.DAL.Context
         public AppDbContext(DbContextOptions options) : base(options)
         {
         }
+
+        public DbSet<Blog> Blogs { get; set; }
 
         // SaveChanges icin CreatedDate ve ModifiedDate i otomatik olarak yerlestiren interceptor
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

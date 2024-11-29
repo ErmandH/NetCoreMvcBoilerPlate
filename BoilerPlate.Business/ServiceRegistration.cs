@@ -11,7 +11,7 @@ namespace BoilerPlate.Business
     {
         public static void AddBusinessServices(this IServiceCollection services)
         {
-
+            services.AddScoped<BlogService>();
 
             // tum storage turleri icin ortak storage
             services.AddScoped<IStorageService, StorageService>();
