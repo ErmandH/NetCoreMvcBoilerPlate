@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using BoilerPlate.DAL.Context;
 using BoilerPlate.DAL;
 using BoilerPlate.AdminPanel.Helpers;
+using BoilerPlate.AdminPanel;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -54,6 +55,20 @@ builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+// Seed iþlemini çaðýr
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        await IdentitySeed.SeedAsync(services);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Hata oluþtu: {ex.Message}");
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
