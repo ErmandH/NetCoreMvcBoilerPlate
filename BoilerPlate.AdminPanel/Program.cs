@@ -53,6 +53,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.Services.AddControllersWithViews();
+builder.Services.AddServerSideBlazor();
 
 var app = builder.Build();
 
@@ -89,4 +90,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+app.MapBlazorHub();
 app.Run();

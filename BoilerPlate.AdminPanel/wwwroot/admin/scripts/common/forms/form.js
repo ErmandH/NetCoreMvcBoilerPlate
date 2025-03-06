@@ -1,87 +1,119 @@
-﻿function getPostData(opt /*: FormDataInputs */) {
-    const fdata = new FormData();
-    console.table(opt)
-    for (let index in opt.inputNameArray) {
-        const inputName = opt.inputNameArray[index]
-        console.log(getValueFromName(inputName).toString())
-        fdata.append(inputName, getValueFromName(inputName).toString());
-    }
-    if (opt.fileInputNameArray) {
-        for (let i in opt.fileInputNameArray) {
-            const fileInputName = opt.fileInputNameArray[i]
-            const fileData = getFileInputFromName(fileInputName)
-            fdata.append(fileInputName, fileData)
+﻿/**
+ * Form yönetimi için ana sınıf
+ */
+class FormManager {
+    /**
+     * @param {Object} config - Form yapılandırması
+     * @param {string} config.formId - Form elementi ID'si
+     * @param {string} config.submitUrl - Form gönderim URL'i
+     * @param {string} [config.redirectUrl] - Başarılı işlem sonrası yönlendirilecek URL
+     * @param {boolean} [config.validateOnSubmit=false] - Form gönderiminde jQuery validate kontrolü yapılsın mı?
+     * @param {Object} [config.additionalData] - FormData'ya eklenecek ekstra veriler
+     * @param {Object} [config.alert] - Alert yapılandırması
+     * @param {Function} [config.onSuccess] - Başarılı işlem callback'i
+     * @param {Function} [config.onError] - Hata durumu callback'i
+     */
+    constructor(config) {
+        this.config = {
+            validateOnSubmit: true,
+            ...config
+        };
+        
+        this.formElement = $(`#${config.formId}`);
+        if (!this.formElement.length) {
+            throw new Error(`${config.formId} ID'li form bulunamadı`);
         }
+
+        this.initialize();
     }
-    if (opt.multipleFileInputName) {
-        const files = getMultipleFileInputFromName('ImageFiles')
-        for (let x = 0; x < files.length; x++) {
-            fdata.append("ImageFiles", files[x]);
-        }
+
+    /**
+     * Form olaylarını başlatır
+     */
+    initialize() {
+        this.formElement.on('submit', (e) => this.handleSubmit(e));
     }
-    //for (let i in opt.ckeditorInputs) {
-    //    const ckName = opt.ckeditorInputs[i]
-    //    fdata.append(ckName, getCkEditorData(ckName).toString());
-    //}
-    return fdata;
-}
 
-function doRequest(opt /*: FormSubmitOptions*/, data /*:FormData*/) {
-    console.log(data)
-    $.ajax({
-        url: opt.url,
-        type: 'POST',
-        data: data,
-        processData: false,
-        contentType: false,
-        success: () => {
-            if (opt.hideAlertOnSuccess && opt.hideAlertOnSuccess === true){
-                window.location.href = opt.href
-                return true;
-            }
-            Swal.fire({
-                title: opt.alertTitle ? opt.alertTitle : 'Başarıyla eklendi!',
-                icon: opt.alertIcon ? opt.alertIcon : 'success',
-                text: opt.alertText ? opt.alertText : '',
-                confirmButtonText: 'Tamam'
-            }).then((result) => {
-                if (opt.redirect === true) {
-                    if (result.isConfirmed) {
-                        window.location.href = opt.href
-                    }
-                }
-
-            })
-        },
-        error: (response) => {
-            Swal.fire({
-                title: "Hata!",
-                text: response.responseJSON?.errorMessage ? response.responseJSON.errorMessage : JSON.stringify(response),
-                icon: "error",
-                confirmButtonText: 'Tamam'
-            })
-        }
-    })
-}
-
-function submitForm(formId/*: string*/, opt /*: FormSubmitOptions*/) {
-    $(`#${formId}`).submit(function (e) {
+    /**
+     * Form gönderimini işler
+     * @param {Event} e - Form submit olayı
+     */
+    async handleSubmit(e) {
         e.preventDefault();
-        if (opt.jqueryvalidate == true) {
-            if ($(`#${formId}`).valid() === false)
-                return;
+
+        if (this.config.validateOnSubmit && !this.formElement.valid()) {
+            return;
         }
-        const fdata = getPostData({
-            fileInputNameArray: opt.inputs.fileInputNameArray,
-            inputNameArray: opt.inputs.inputNameArray,
-            multipleFileInputName: opt.inputs.multipleFileInputName
+
+        try {
+            const formData = FormUtils.createFormData(this.formElement, this.config.additionalData);
+            await this.submitForm(formData);
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
+    /**
+     * Form verilerini sunucuya gönderir
+     * @param {FormData} formData - Form verisi
+     */
+    submitForm(formData) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: this.config.submitUrl,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: (response) => {
+                    this.handleSuccess(response);
+                    resolve(response);
+                },
+                error: (error) => {
+                    reject(error);
+                }
+            });
         });
-        if (opt.includeSeo == true) {
-            getSeoInputs(fdata)
+    }
+
+    /**
+     * Başarılı form gönderimini işler
+     * @param {Object} response - Sunucu yanıtı
+     */
+    handleSuccess(response) {
+        if (this.config.onSuccess) {
+            this.config.onSuccess(response);
+            return;
         }
-        if (opt.additionalInputCallBack) {
-            opt.additionalInputCallBack(fdata)
+
+        const alert = this.config.alert || {};
+        Swal.fire({
+            title: alert.title || SwalTitle.SUCCESS,
+            icon: alert.icon || SwalIcon.SUCCESS,
+            text: alert.text || '',
+            confirmButtonText: 'Tamam'
+        }).then((result) => {
+            if (result.isConfirmed && this.config.redirectUrl) {
+                window.location.href = this.config.redirectUrl;
+            }
+        });
+    }
+
+    /**
+     * Form hatalarını işler
+     * @param {Object} error - Hata nesnesi
+     */
+    handleError(error) {
+        if (this.config.onError) {
+            this.config.onError(error);
+            return;
         }
-        doRequest(opt, fdata)
-    })
+
+        Swal.fire({
+            title: SwalTitle.ERROR,
+            text: error.responseJSON?.errorMessage || 'Bir hata oluştu',
+            icon: SwalIcon.ERROR,
+            confirmButtonText: 'Tamam'
+        });
+    }
 }

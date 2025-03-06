@@ -17,5 +17,8 @@
     <ProjectReference Include="..\BoilerPlate.Business\BoilerPlate.Business.csproj" />
     <ProjectReference Include="..\BoilerPlate.DAL\BoilerPlate.DAL.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Components\" />
+  </ItemGroup>
 
 </Project>

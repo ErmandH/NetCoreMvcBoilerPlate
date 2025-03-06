@@ -1,0 +1,57 @@
+@model IList<BoilerPlate.Entity.Entities.Concrete.Blog>
+@{
+	ViewData["Title"] = "Blog Yönetimi";
+}
+
+<div class="container-fluid">
+	<div class="card">
+		<div class="card-header">
+			<h3 class="card-title">Blog Listesi</h3>
+			<div class="card-tools">
+				<a href="/Blog/Create" class="btn btn-primary">
+					<i class="fas fa-plus"></i> Yeni Blog
+				</a>
+			</div>
+		</div>
+		<div class="card-body">
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Başlık</th>
+						<th>Kategoriler</th>
+						<th>Resim Sayısı</th>
+						<th>Oluşturulma Tarihi</th>
+						<th>İşlemler</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var blog in Model)
+					{
+							<tr>
+								<td>@blog.Id</td>
+								<td>@blog.Title</td>
+								<td>
+								@string.Join(", ", blog.BlogCategories.Select(bc => bc.Category.Name))
+								</td>
+								<td>@blog.BlogImages.Count</td>
+								<td>@blog.CreatedDate.ToString("dd.MM.yyyy HH:mm")</td>
+								<td>
+									<a href="/Blog/Update/@blog.Id" class="btn btn-warning btn-sm">
+										<i class="fas fa-edit"></i>
+									</a>
+									<button class="btn btn-danger btn-sm" onclick="deleteBlog(@blog.Id)">
+										<i class="fas fa-trash"></i>
+									</button>
+								</td>
+							</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+		<script src="~/admin/scripts/blog/index.js"></script>
+}

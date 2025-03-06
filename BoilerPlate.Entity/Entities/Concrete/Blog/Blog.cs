@@ -12,5 +12,11 @@ namespace BoilerPlate.Entity.Entities.Concrete
     {
         public string Title { get; set; }
         public string Description { get; set; }
+
+        // Resimler ile çoka çok ilişki
+        public virtual ICollection<BlogImage> BlogImages { get; set; }
+
+        // Kategoriler ile çoka çok ilişki
+        public virtual ICollection<BlogCategory> BlogCategories { get; set; }
     }
 }

@@ -86,8 +86,13 @@ namespace BoilerPlate.Business.DbServices.Base
                 if (predicate != null)
                     query = query.Where(predicate);
 
-                foreach (var includeProperty in includeProperties)
-                    query = query.Include(includeProperty);
+                if (includeProperties.Any())
+                {
+                    foreach (var includeProperty in includeProperties)
+                    {
+                        query = query.Include(includeProperty);
+                    }
+                }
 
                 var entity = await query.SingleOrDefaultAsync();
 
@@ -96,11 +101,11 @@ namespace BoilerPlate.Business.DbServices.Base
                     return new DataResult<T>(ResultStatus.Success, entity);
                 }
 
-                return new DataResult<T>(ResultStatus.Error, $"{typeof(T).Name} bulunamadı.",null);
+                return new DataResult<T>(ResultStatus.Error, $"{typeof(T).Name} bulunamadı.", null);
             }
             catch (Exception ex)
             {
-                return new DataResult<T>(ResultStatus.Error,  "Getirme işlemi sırasında bir hata oluştu.", null);
+                return new DataResult<T>(ResultStatus.Error, "Getirme işlemi sırasında bir hata oluştu.", null);
             }
         }
 
@@ -113,8 +118,13 @@ namespace BoilerPlate.Business.DbServices.Base
                 if (predicate != null)
                     query = query.Where(predicate);
 
-                foreach (var includeProperty in includeProperties)
-                    query = query.Include(includeProperty);
+                if (includeProperties.Any())
+                {
+                    foreach (var includeProperty in includeProperties)
+                    {
+                        query = query.Include(includeProperty);
+                    }
+                }
 
                 var entities = await query.ToListAsync();
 

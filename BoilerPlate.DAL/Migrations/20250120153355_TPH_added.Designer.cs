@@ -4,6 +4,7 @@ using BoilerPlate.DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BoilerPlate.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250120153355_TPH_added")]
+    partial class TPH_added
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,21 +52,6 @@ namespace BoilerPlate.DAL.Migrations
                     b.ToTable("Blogs");
                 });
 
-            modelBuilder.Entity("BoilerPlate.Entity.Entities.Concrete.BlogCategory", b =>
-                {
-                    b.Property<int>("BlogId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.HasKey("BlogId", "CategoryId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("BlogCategories");
-                });
-
             modelBuilder.Entity("BoilerPlate.Entity.Entities.Concrete.BlogImage", b =>
                 {
                     b.Property<int>("BlogId")
@@ -77,33 +65,6 @@ namespace BoilerPlate.DAL.Migrations
                     b.HasIndex("ImageId");
 
                     b.ToTable("BlogImages");
-                });
-
-            modelBuilder.Entity("BoilerPlate.Entity.Entities.Concrete.Category", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("BoilerPlate.Entity.Entities.Concrete.File.BaseFile", b =>
@@ -389,25 +350,6 @@ namespace BoilerPlate.DAL.Migrations
                     b.HasDiscriminator().HasValue("Image");
                 });
 
-            modelBuilder.Entity("BoilerPlate.Entity.Entities.Concrete.BlogCategory", b =>
-                {
-                    b.HasOne("BoilerPlate.Entity.Entities.Concrete.Blog", "Blog")
-                        .WithMany("BlogCategories")
-                        .HasForeignKey("BlogId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BoilerPlate.Entity.Entities.Concrete.Category", "Category")
-                        .WithMany("BlogCategories")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Blog");
-
-                    b.Navigation("Category");
-                });
-
             modelBuilder.Entity("BoilerPlate.Entity.Entities.Concrete.BlogImage", b =>
                 {
                     b.HasOne("BoilerPlate.Entity.Entities.Concrete.Blog", "Blog")
@@ -480,14 +422,7 @@ namespace BoilerPlate.DAL.Migrations
 
             modelBuilder.Entity("BoilerPlate.Entity.Entities.Concrete.Blog", b =>
                 {
-                    b.Navigation("BlogCategories");
-
                     b.Navigation("BlogImages");
-                });
-
-            modelBuilder.Entity("BoilerPlate.Entity.Entities.Concrete.Category", b =>
-                {
-                    b.Navigation("BlogCategories");
                 });
 
             modelBuilder.Entity("BoilerPlate.Entity.Entities.Concrete.File.ImageFile", b =>

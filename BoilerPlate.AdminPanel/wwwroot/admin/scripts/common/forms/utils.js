@@ -1,42 +1,95 @@
-﻿function getValueFromName(inputName) {
-    const value = $(`[name=${inputName}]`).val()
-    console.log(`${inputName}: ${value}`)
-    return value
-}
+﻿/**
+ * Form işlemleri için yardımcı fonksiyonlar
+ */
 
-function getFileInputFromName(inputName) {
-    const fileInput = $(`input[name=${inputName}]`)[0] ;
-    const file = fileInput.files[0];
-    return file
-}
+class FormUtils {
+    /**
+     * Form alanından değer alır
+     * @param {string} inputName - Alan adı
+     * @returns {string} Alan değeri
+     */
+    static getFieldValue(inputName) {
+        const field = $(`[name=${inputName}]`);
+        if (!field.length) {
+            console.warn(`${inputName} adında bir form alanı bulunamadı`);
+            return null;
+        }
+        return field.val();
+    }
 
+    /**
+     * Dosya alanından tek dosya alır
+     * @param {string} inputName - Alan adı
+     * @returns {File|null} Dosya
+     */
+    static getSingleFile(inputName) {
+        const fileInput = $(`input[name=${inputName}]`)[0];
+        return fileInput?.files?.[0] || null;
+    }
 
-function getMultipleFileInputFromName(inputName) {
-    const fileInputs = document.querySelectorAll(`input[name=${inputName}]`);
-    const files = [];
+    /**
+     * Dosya alanından çoklu dosya alır
+     * @param {string} inputName - Alan adı
+     * @returns {File[]} Dosya listesi
+     */
+    static getMultipleFiles(inputName) {
+        const fileInputs = document.querySelectorAll(`input[name=${inputName}]`);
+        const files = [];
 
-    fileInputs.forEach((fileInput) => {
-        const fileList = fileInput.files;
-        if (fileList) {
-            for (let i = 0; i < fileList.length; i++) {
-                files.push(fileList[i]);
+        fileInputs.forEach(input => {
+            if (input.files) {
+                Array.from(input.files).forEach(file => files.push(file));
+            }
+        });
+
+        return files;
+    }
+
+    /**
+     * Form verilerini FormData nesnesine dönüştürür
+     * @param {JQuery} formElement - Form elementi
+     * @param {Object} [additionalData] - Ekstra eklenecek veriler
+     * @returns {FormData} Form verisi
+     */
+    static createFormData(formElement, additionalData = null) {
+        const formData = new FormData();
+        
+        // Form verilerini serialize ederek al
+        const serializedArray = formElement.serializeArray();
+        serializedArray.forEach(item => {
+            formData.append(item.name, item.value);
+        });
+
+        // Dosya alanlarını ekle
+        const fileInputs = formElement.find('input[type="file"]');
+        fileInputs.each((_, input) => {
+            const files = input.files;
+            if (files && files.length > 0) {
+                if (input.multiple) {
+                    Array.from(files).forEach(file => {
+                        formData.append(input.name, file);
+                    });
+                } else {
+                    formData.append(input.name, files[0]);
+                }
+            }
+        });
+
+        // CKEditor alanlarını ekle
+        if (typeof CKEDITOR !== 'undefined') {
+            for (let instanceName in CKEDITOR.instances) {
+                const editorContent = CKEDITOR.instances[instanceName].getData();
+                formData.append(instanceName, editorContent);
             }
         }
-    });
 
-    return files;
-}
+        // Ekstra verileri ekle
+        if (additionalData) {
+            Object.keys(additionalData).forEach(key => {
+                formData.append(key, additionalData[key]);
+            });
+        }
 
-function getSeoInputs(fdata) {
-    $('[name^="seo"]').each(function (x, y) {
-        fdata.append($(y).attr("name"), $(y).val().toString());
-    });
-    return fdata
-}
-
-function getCkEditorData(inputName) {
-    const ckData = CKEDITOR.instances.Description.getData();
-
-    console.log(ckData)
-    return ckData
+        return formData;
+    }
 }
